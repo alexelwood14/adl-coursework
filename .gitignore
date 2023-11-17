@@ -1,3 +1,4 @@
 data/
 data/MagnaTagATune.zip
 src/utils/__pycache__
+logs/
