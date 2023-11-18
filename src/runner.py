@@ -10,14 +10,14 @@ from model import Model
 from trainer import Trainer
 
 
-DATA_PATH = os.path.join("data", "MagnaTagATune", "samples")
-TRAIN_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "train_labels.pkl")
-VAL_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "val_labels.pkl")
+# DATA_PATH = os.path.join("data", "MagnaTagATune", "samples")
+# TRAIN_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "train_labels.pkl")
+# VAL_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "val_labels.pkl")
 
-# SCRATCH_DIR = os.path.join(os.sep, "mnt", "storage", "scratch", "wh20899")
-# DATA_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "samples")
-# TRAIN_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "train_labels.pkl")
-# VAL_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "val_labels.pkl")
+SCRATCH_DIR = os.path.join(os.sep, "mnt", "storage", "scratch", "wh20899")
+DATA_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "samples")
+TRAIN_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "train_labels.pkl")
+VAL_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "val_labels.pkl")
 
 log_dir = os.path.join(".", "logs")
 
@@ -35,7 +35,8 @@ parser.add_argument(
     type=int,
     help="Number of auto clip sets within each mini-batch",
 )
-parser.add_argument(
+parser.add_argument(13:09 log_12118102.out
+
     "--epochs",
     default=20,
     type=int,
