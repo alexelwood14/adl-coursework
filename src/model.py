@@ -3,10 +3,10 @@ import torch
 from torch.nn import functional as F
 
 class Model(nn.Module):
-    def __init__(self):
+    def __init__(self, length, stride):
         super().__init__()
 
-        self.conv1 = nn.Conv1d(1, 1, 256, 256)
+        self.conv1 = nn.Conv1d(1, 1, length, stride)
         self.initialise_layer(self.conv1)
         self.conv2 = nn.Conv1d(1, 32, 8, 1)
         self.initialise_layer(self.conv2)
@@ -17,9 +17,12 @@ class Model(nn.Module):
         self.full2 = nn.Linear(100, 50)
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
-        batch_size = input.shape[0]
-        print(input.shape)
-        x = torch.flatten(input, 0, 1)
+        if len(input.shape) == 4:
+            batch_size = input.shape[0]
+            x = torch.flatten(input, 0, 1)
+        else:
+            batch_size = 1
+            x = input
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = self.pool(x)

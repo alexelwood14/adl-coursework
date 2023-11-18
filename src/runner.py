@@ -22,7 +22,7 @@ VAL_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "val_labe
 log_dir = os.path.join(".", "logs")
 
 parser = argparse.ArgumentParser(
-    description="Train a simple CNN on CIFAR-10",
+    description="Train the cousework model",
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 default_dataset_dir = Path.home() / ".cache" / "torch" / "datasets"
@@ -33,7 +33,7 @@ parser.add_argument(
     "--batch-size",
     default=10,
     type=int,
-    help="Number of images within each mini-batch",
+    help="Number of auto clip sets within each mini-batch",
 )
 parser.add_argument(
     "--epochs",
@@ -65,6 +65,18 @@ parser.add_argument(
     default=cpu_count(),
     type=int,
     help="Number of worker processes used to load data.",
+)
+parser.add_argument(
+    "--stride",
+    default=256,
+    type=int,
+    help="Stride of convolutional filter",
+)
+parser.add_argument(
+    "--length",
+    default=256,
+    type=int,
+    help="Length of convolutional filter",
 )
 
 
@@ -114,7 +126,7 @@ def main(args):
     else:
         DEVICE = torch.device("cpu")
 
-    model = Model()
+    model = Model(args.length, args.stride)
 
     criterion = nn.BCELoss()
 
