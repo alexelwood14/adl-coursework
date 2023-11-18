@@ -10,14 +10,14 @@ from model import Model
 from trainer import Trainer
 
 
-# DATA_PATH = os.path.join("data", "MagnaTagATune", "samples")
-# TRAIN_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "train_labels.pkl")
-# VAL_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "val_labels.pkl")
+DATA_PATH = os.path.join("data", "MagnaTagATune", "samples")
+TRAIN_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "train_labels.pkl")
+VAL_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "val_labels.pkl")
 
-SCRATCH_DIR = os.path.join(os.sep, "mnt", "storage", "scratch", "wh20899")
-DATA_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "samples")
-TRAIN_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "train_labels.pkl")
-VAL_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "val_labels.pkl")
+# SCRATCH_DIR = os.path.join(os.sep, "mnt", "storage", "scratch", "wh20899")
+# DATA_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "samples")
+# TRAIN_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "train_labels.pkl")
+# VAL_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "val_labels.pkl")
 
 log_dir = os.path.join(".", "logs")
 
@@ -95,7 +95,7 @@ def get_summary_writer_log_dir(args) -> str:
     tb_log_dir_prefix = f'CNN_bs={args.batch_size}_lr={args.learning_rate}_run_'
     i = 0
     while i < 1000:
-        tb_log_dir = os.path.join(log_dir, (tb_log_dir_prefix + str(i)))
+        tb_log_dir = os.path.join(log_dir, (tb_log_dir_prefix + str(i))) # TODO This is broken!
         if os.path.exists(tb_log_dir):
             return str(tb_log_dir)
         i += 1
@@ -141,7 +141,7 @@ def main(args):
     )
 
     trainer = Trainer(
-        model, train_loader, test_loader, criterion, optimizer, summary_writer, DEVICE
+        model, train_loader, test_loader, VAL_LABELS_PATH, criterion, optimizer, summary_writer, DEVICE
     )
 
     trainer.train(

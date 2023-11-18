@@ -3,6 +3,7 @@ from typing import Union
 from torch.optim.optimizer import Optimizer
 import time, argparse, torch
 from torch.utils.data import DataLoader
+from utils.evaluation import evaluate
 import numpy as np
 
 class Trainer:
@@ -11,6 +12,7 @@ class Trainer:
         model: nn.Module,
         train_loader: DataLoader,
         val_loader: DataLoader,
+        val_path: str,
         criterion: nn.Module,
         optimizer: Optimizer,
         summary_writer,
@@ -20,6 +22,7 @@ class Trainer:
         self.device = device
         self.train_loader = train_loader
         self.val_loader = val_loader
+        self.val_path = val_path
         self.criterion = criterion
         self.optimizer = optimizer
         self.summary_writer = summary_writer
@@ -71,6 +74,8 @@ class Trainer:
                 # so we have to switch back to train mode afterwards
                 self.model.train()
 
+        evaluate(preds, self.val_loader)
+
     def print_metrics(self, epoch, accuracy, loss, data_load_time, step_time):
         epoch_step = self.step % len(self.train_loader)
         print(
@@ -103,38 +108,20 @@ class Trainer:
         )
 
     def validate(self):
-        results = {"preds": [], "labels": []}
-        total_loss = 0
+        all_preds = []
         self.model.eval()
 
         # No need to track gradients for validation, we're not optimizing.
         with torch.no_grad():
-            for _, batch, labels in self.val_loader:
+            for _, batch, _ in self.val_loader:
                 batch = batch.to(self.device)
-                labels = labels.to(self.device)
                 logits = self.model(batch)
-                loss = self.criterion(logits, labels)
-                total_loss += loss.item()
                 preds = logits.argmax(dim=-1).cpu().numpy()
-                results["preds"].extend(list(preds))
-                results["labels"].extend(list(labels.cpu().numpy()))
+                all_preds.extend(list(preds))
 
-        accuracy = compute_accuracy(
-            np.array(results["labels"]).argmax(-1), np.array(results["preds"])
-        )
-        average_loss = total_loss / len(self.val_loader)
-
-        self.summary_writer.add_scalars(
-                "accuracy",
-                {"test": accuracy},
-                self.step
-        )
-        self.summary_writer.add_scalars(
-                "loss",
-                {"test": average_loss},
-                self.step
-        )
-        print(f"validation loss: {average_loss:.5f}, accuracy: {accuracy * 100:2.2f}")
+        all_preds = torch.reshape(torch.tensor(all_preds), (-1, 1))
+        all_preds = all_preds.to(self.device)
+        evaluate(all_preds, self.val_path)
 
 
 def compute_accuracy(
