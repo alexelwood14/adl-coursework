@@ -35,8 +35,7 @@ parser.add_argument(
     type=int,
     help="Number of auto clip sets within each mini-batch",
 )
-parser.add_argument(13:09 log_12118102.out
-
+parser.add_argument(
     "--epochs",
     default=20,
     type=int,
