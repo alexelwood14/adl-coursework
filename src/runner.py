@@ -37,7 +37,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--epochs",
-    default=1,
+    default=20,
     type=int,
     help="Number of epochs (passes through the entire dataset) to train for",
 )
@@ -49,13 +49,13 @@ parser.add_argument(
 )
 parser.add_argument(
     "--log-frequency",
-    default=10,
+    default=100,
     type=int,
     help="How frequently to save logs to tensorboard in number of steps",
 )
 parser.add_argument(
     "--print-frequency",
-    default=10,
+    default=100,
     type=int,
     help="How frequently to print progress to the command line in number of steps",
 )
