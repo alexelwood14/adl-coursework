@@ -17,7 +17,7 @@ TRAIN_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "t
 VAL_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "val_labels.pkl")
 
 batch_size = 10
-worker_count = 4
+worker_count = 1
 learning_rate = 0.1
 epochs = 5
 val_frequency = 5

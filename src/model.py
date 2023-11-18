@@ -26,7 +26,7 @@ class Model(nn.Module):
         x = self.pool(x)
         x = torch.flatten(x, 1)
         x = F.relu(self.full1(x))
-        x = F.sigmoid(self.full2(x))
+        x = torch.sigmoid(self.full2(x))
         x = torch.reshape(x, (batch_size, 10, 50))
         x = torch.mean(x, dim=1)
         return x
