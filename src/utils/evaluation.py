@@ -9,7 +9,7 @@ def evaluate(preds, gts_path):
     Given the list of all model outputs (logits), and the path to the ground
     truth (val.pkl), calculate the AUC Score of the classified segments.
     Args:
-        preds (List[torch.Tensor]): The model ouputs (logits). This is a
+        preds (List[torch.Tensor]): The model outputs (logits). This is a
             list of all the tensors produced by the model for all samples in
             val.pkl. It should be a list of length 4332 (size of val). All
             tensors in the list should be of size 50 (number of classes).

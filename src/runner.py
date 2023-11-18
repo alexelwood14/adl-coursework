@@ -37,13 +37,13 @@ parser.add_argument(
 )
 parser.add_argument(
     "--epochs",
-    default=20,
+    default=1,
     type=int,
     help="Number of epochs (passes through the entire dataset) to train for",
 )
 parser.add_argument(
     "--val-frequency",
-    default=2,
+    default=1,
     type=int,
     help="How frequently to test the model on the validation set in number of epochs",
 )
@@ -112,6 +112,7 @@ def main(args):
         batch_size=args.batch_size,
         pin_memory=True,
         num_workers=args.worker_count,
+        drop_last = True
     )
     test_loader = torch.utils.data.DataLoader(
         test_dataset,

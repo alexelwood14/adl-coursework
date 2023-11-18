@@ -112,7 +112,7 @@ class Trainer:
             for _, batch, labels in self.val_loader:
                 batch = batch.to(self.device)
                 labels = labels.to(self.device)
-                logits = self.model(batch[0])
+                logits = self.model(batch)
                 loss = self.criterion(logits, labels)
                 total_loss += loss.item()
                 preds = logits.argmax(dim=-1).cpu().numpy()
@@ -120,7 +120,7 @@ class Trainer:
                 results["labels"].extend(list(labels.cpu().numpy()))
 
         accuracy = compute_accuracy(
-            np.array(results["labels"]), np.array(results["preds"])
+            np.array(results["labels"]).argmax(-1), np.array(results["preds"])
         )
         average_loss = total_loss / len(self.val_loader)
 

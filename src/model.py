@@ -17,12 +17,8 @@ class Model(nn.Module):
         self.full2 = nn.Linear(100, 50)
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
-        if len(input.shape) == 4:
-            batch_size = input.shape[0]
-            x = torch.flatten(input, 0, 1)
-        else:
-            batch_size = 1
-            x = input
+        batch_size = input.shape[0]
+        x = torch.flatten(input, 0, 1)
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = self.pool(x)
