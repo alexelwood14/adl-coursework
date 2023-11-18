@@ -12,9 +12,9 @@ TRAIN_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "train_
 VAL_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "val_labels.pkl")
 
 batch_size = 10
-worker_count = 1
+worker_count = 4
 learning_rate = 0.1
-epochs = 2
+epochs = 5
 val_frequency = 5
 print_frequency = 10
 log_frequency = 10
