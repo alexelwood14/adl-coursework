@@ -11,7 +11,7 @@ from trainer import Trainer
 # TRAIN_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "train_labels.pkl")
 # VAL_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "val_labels.pkl")
 
-SCRATCH_DIR = os.path.join("mnt", "storage", "scratch", "wh20899")
+SCRATCH_DIR = os.path.join(os.sep, "mnt", "storage", "scratch", "wh20899")
 DATA_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "samples")
 TRAIN_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "train_labels.pkl")
 VAL_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "val_labels.pkl")
