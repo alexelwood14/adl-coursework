@@ -2,6 +2,11 @@ from torch import nn
 import torch
 from torch.nn import functional as F
 
+# The original dataset contains values within this range
+# Used find_extrema() from utils.preprocessor
+GLOBAL_MIN = -32768
+GLOBAL_MAX = 32767
+
 class Model(nn.Module):
     def __init__(self, length, stride):
         super().__init__()
@@ -18,7 +23,8 @@ class Model(nn.Module):
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         batch_size = input.shape[0]
         x = torch.flatten(input, 0, 1)
-        x = (x - x.min() ) / ( x.max() - x.min()) # Min-Max Normalisation to [0, 1]
+        # Min-Max Normalisation to [0, 1]
+        x = (x - GLOBAL_MIN) / ( GLOBAL_MAX - GLOBAL_MIN) 
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = self.pool(x)

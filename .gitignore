@@ -3,3 +3,4 @@ data/MagnaTagATune.zip
 src/utils/__pycache__
 logs/
 src/__pycache__
+.DS_STORE
