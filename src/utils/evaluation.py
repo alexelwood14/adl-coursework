@@ -22,8 +22,6 @@ def evaluate(preds, gts_path):
 
     labels = []
     model_outs = []
-    print(preds.shape)
-    print(gts.shape)
     for i in range(len(preds)):
         # labels.append(gts[i][2].numpy())                             # A 50D Ground Truth binary vector
         labels.append(np.array(gts.iloc[i]['label']).astype(float))    # A 50D Ground Truth binary vector
@@ -31,12 +29,6 @@ def evaluate(preds, gts_path):
 
     labels = np.array(labels).astype(float)
     model_outs = np.array(model_outs)
-
-    print(labels.shape)
-    print(model_outs.shape)
-
-    print(labels[0])
-    print(model_outs[0])
 
     auc_score = roc_auc_score(y_true=labels, y_score=model_outs)
 

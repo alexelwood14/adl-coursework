@@ -6,7 +6,6 @@ class Model(nn.Module):
     def __init__(self, length, stride):
         super().__init__()
 
-        self.batchNorm = nn.BatchNorm2d(10)
         self.conv1 = nn.Conv1d(1, 1, length, stride)
         self.initialise_layer(self.conv1)
         self.conv2 = nn.Conv1d(1, 32, 8, 1)
@@ -19,8 +18,8 @@ class Model(nn.Module):
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         batch_size = input.shape[0]
-        x = self.batchNorm(input)
-        x = torch.flatten(x, 0, 1)
+        x = torch.flatten(input, 0, 1)
+        x = (x - x.min() ) / ( x.max() - x.min()) # Min-Max Normalisation to [0, 1]
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = self.pool(x)
