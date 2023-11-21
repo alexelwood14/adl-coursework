@@ -127,6 +127,8 @@ def main(args):
     else:
         DEVICE = torch.device("cpu")
 
+    print(f'Running model on device {DEVICE}')
+
     model = Model(args.length, args.stride)
 
     criterion = nn.BCELoss()
