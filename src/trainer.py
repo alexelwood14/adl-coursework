@@ -116,11 +116,11 @@ class Trainer:
             for _, batch, _ in self.val_loader:
                 batch = batch.to(self.device)
                 logits = self.model(batch)
-                preds = logits.argmax(dim=-1).cpu().numpy()
+                preds = logits.cpu().numpy() # .argmax(dim=-1) removed
                 all_preds.extend(list(preds))
 
-        all_preds = torch.reshape(torch.tensor(all_preds), (-1, 1))
-        all_preds = all_preds.to(self.device)
+        # all_preds = torch.reshape(torch.tensor(all_preds), (-1, 1))
+        all_preds = torch.tensor(np.array(all_preds)).to(self.device)
         evaluate(all_preds, self.val_path)
 
 
