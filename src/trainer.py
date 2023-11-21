@@ -74,8 +74,6 @@ class Trainer:
                 # so we have to switch back to train mode afterwards
                 self.model.train()
 
-        evaluate(preds, self.val_loader)
-
     def print_metrics(self, epoch, accuracy, loss, data_load_time, step_time):
         epoch_step = self.step % len(self.train_loader)
         print(
