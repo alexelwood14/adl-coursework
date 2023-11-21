@@ -10,14 +10,7 @@ from model import Model
 from trainer import Trainer
 
 
-DATA_PATH = os.path.join("data", "MagnaTagATune", "samples")
-TRAIN_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "train_labels.pkl")
-VAL_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "val_labels.pkl")
-
-# SCRATCH_DIR = os.path.join(os.sep, "mnt", "storage", "scratch", "wh20899")
-# DATA_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "samples")
-# TRAIN_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "train_labels.pkl")
-# VAL_LABELS_PATH = os.path.join(SCRATCH_DIR, "MagnaTagATune", "annotations", "val_labels.pkl")
+DATA_PATH = os.path.join("data", "MagnaTagATune")
 
 log_dir = os.path.join(".", "logs")
 
@@ -25,8 +18,7 @@ parser = argparse.ArgumentParser(
     description="Train the coursework model",
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
-default_dataset_dir = Path.home() / ".cache" / "torch" / "datasets"
-parser.add_argument("--dataset-root", default=default_dataset_dir)
+parser.add_argument("--dataset-root", default=DATA_PATH)
 parser.add_argument("--log-dir", default=Path("logs"), type=Path)
 parser.add_argument("--learning-rate", default=1e-2, type=float, help="Learning rate")
 parser.add_argument(
@@ -103,8 +95,10 @@ def get_summary_writer_log_dir(args) -> str:
 
 
 def main(args):
-    train_dataset = MagnaTagATune(TRAIN_LABELS_PATH, DATA_PATH)
-    test_dataset = MagnaTagATune(VAL_LABELS_PATH, DATA_PATH)
+    TRAIN_LABELS_PATH = os.path.join(args.dataset_root, "annotations", "new_train_labels.pkl")
+    VAL_LABELS_PATH = os.path.join(args.dataset_root, "annotations", "new_val_labels.pkl")
+    train_dataset = MagnaTagATune(TRAIN_LABELS_PATH, os.path.join(args.dataset_root, "samples"))
+    test_dataset = MagnaTagATune(VAL_LABELS_PATH, os.path.join(args.dataset_root, "samples"))
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset,

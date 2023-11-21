@@ -17,4 +17,4 @@ module purge
 # load in the module dependencies for this script
 module load "languages/anaconda3/2021-3.8.8-cuda-11.1-pytorch"
 
-python runner.py
+python runner.py --dataset-root="/mnt/storage/scratch/$USER"
