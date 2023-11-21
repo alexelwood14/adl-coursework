@@ -22,7 +22,7 @@ VAL_LABELS_PATH = os.path.join("data", "MagnaTagATune", "annotations", "val_labe
 log_dir = os.path.join(".", "logs")
 
 parser = argparse.ArgumentParser(
-    description="Train the cousework model",
+    description="Train the coursework model",
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 default_dataset_dir = Path.home() / ".cache" / "torch" / "datasets"
