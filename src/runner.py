@@ -136,6 +136,7 @@ def main(args):
     print(f'Running model on device {DEVICE}')
 
     # Define the model, criterion and optimizer
+    print(f'Defining model with learning rate {args.learning_rate}, momentum {args.momentum}.')
     model = Model(args.length, args.stride)
     criterion = nn.BCELoss()
     optimizer = torch.optim.SGD(model.parameters(), args.learning_rate, args.momentum)
