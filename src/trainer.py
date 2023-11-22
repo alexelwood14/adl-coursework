@@ -12,7 +12,9 @@ class Trainer:
         model: nn.Module,
         train_loader: DataLoader,
         val_loader: DataLoader,
+        test_loader: DataLoader,
         val_path: str,
+        test_path: str,
         criterion: nn.Module,
         optimizer: Optimizer,
         summary_writer,
@@ -22,7 +24,9 @@ class Trainer:
         self.device = device
         self.train_loader = train_loader
         self.val_loader = val_loader
+        self.test_loader = test_loader
         self.val_path = val_path
+        self.test_path = test_path
         self.criterion = criterion
         self.optimizer = optimizer
         self.summary_writer = summary_writer
@@ -69,10 +73,12 @@ class Trainer:
 
             # self.summary_writer.add_scalar("epoch", epoch, self.step)
             if ((epoch + 1) % val_frequency) == 0:
-                self.validate()
+                self.validate(self.val_path)
                 # self.validate() will put the model in validation mode,
                 # so we have to switch back to train mode afterwards
                 self.model.train()
+
+        self.validate(self.test_path)
 
     def print_metrics(self, epoch, accuracy, loss, data_load_time, step_time):
         epoch_step = self.step % len(self.train_loader)
@@ -105,7 +111,7 @@ class Trainer:
                 "time/data", step_time, self.step
         )
 
-    def validate(self):
+    def validate(self, data_path):
         all_preds = []
         self.model.eval()
 
@@ -119,7 +125,7 @@ class Trainer:
 
         # all_preds = torch.reshape(torch.tensor(all_preds), (-1, 1))
         all_preds = torch.tensor(np.array(all_preds)).to(self.device)
-        evaluate(all_preds, self.val_path)
+        evaluate(all_preds, data_path)
 
 
 def compute_accuracy(

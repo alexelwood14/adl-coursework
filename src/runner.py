@@ -21,6 +21,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument("--dataset-root", default=DATA_PATH)
 parser.add_argument("--log-dir", default=Path("logs"), type=Path)
 parser.add_argument("--learning-rate", default=1e-2, type=float, help="Learning rate")
+parser.add_argument("--momentum", default=0.99, type=float, help="Momentum")
 parser.add_argument(
     "--batch-size",
     default=10,
@@ -95,10 +96,14 @@ def get_summary_writer_log_dir(args) -> str:
 
 
 def main(args):
-    TRAIN_LABELS_PATH = os.path.join(args.dataset_root, "annotations", "new_train_labels.pkl")
-    VAL_LABELS_PATH = os.path.join(args.dataset_root, "annotations", "new_val_labels.pkl")
-    train_dataset = MagnaTagATune(TRAIN_LABELS_PATH, os.path.join(args.dataset_root, "samples"))
-    test_dataset = MagnaTagATune(VAL_LABELS_PATH, os.path.join(args.dataset_root, "samples"))
+    # Load the train, validation and test datasets and create
+    train_labels_path = os.path.join(args.dataset_root, "annotations", "new_train_labels.pkl")
+    val_labels_path = os.path.join(args.dataset_root, "annotations", "new_val_labels.pkl")
+    test_labels_path = os.path.join(args.dataset_root, "annotations", "test_labels.pkl")
+    samples_path = os.path.join(args.dataset_root, "samples")
+    train_dataset = MagnaTagATune(train_labels_path, samples_path)
+    val_dataset = MagnaTagATune(val_labels_path, samples_path)
+    test_dataset = MagnaTagATune(test_labels_path, samples_path)
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
@@ -108,6 +113,13 @@ def main(args):
         num_workers=args.worker_count,
         drop_last = True
     )
+    val_loader = torch.utils.data.DataLoader(
+        val_dataset,
+        shuffle=False,
+        batch_size=args.batch_size,
+        num_workers=args.worker_count,
+        pin_memory=True,
+    )
     test_loader = torch.utils.data.DataLoader(
         test_dataset,
         shuffle=False,
@@ -116,30 +128,27 @@ def main(args):
         pin_memory=True,
     )
 
+    # Move data to appropriate device
     if torch.cuda.is_available():
         DEVICE = torch.device("cuda")
     else:
         DEVICE = torch.device("cpu")
-
     print(f'Running model on device {DEVICE}')
 
+    # Define the model, criterion and optimizer
     model = Model(args.length, args.stride)
-
     criterion = nn.BCELoss()
+    optimizer = torch.optim.SGD(model.parameters(), args.learning_rate, args.momentum)
 
-    optimizer = torch.optim.SGD(model.parameters(), args.learning_rate)
-
+    # Initialise logging
     log_dir = get_summary_writer_log_dir(args)
     print(f"Writing logs to {log_dir}")
-    summary_writer = SummaryWriter(
-            str(log_dir),
-            flush_secs=5
-    )
+    summary_writer = SummaryWriter(str(log_dir), flush_secs=5)
 
+    # Define trainer and train the model
     trainer = Trainer(
-        model, train_loader, test_loader, VAL_LABELS_PATH, criterion, optimizer, summary_writer, DEVICE
+        model, train_loader, val_loader, test_loader, val_labels_path, test_labels_path, criterion, optimizer, summary_writer, DEVICE
     )
-
     trainer.train(
         args.epochs,
         args.val_frequency,
