@@ -17,13 +17,13 @@ module purge
 # load in the module dependencies for this script
 module load "languages/anaconda3/2021-3.8.8-cuda-11.1-pytorch"
 
-python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.99 --learning_rate=0.01
-python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.97 --learning_rate=0.01
-python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.95 --learning_rate=0.01
-python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.90 --learning_rate=0.01
-python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0 --learning_rate=0.01
-python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.99 --learning_rate=0.02
-python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.97 --learning_rate=0.02
-python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.95 --learning_rate=0.02
-python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.90 --learning_rate=0.02
-python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0 --learning_rate=0.02
+python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.99 --learning-rate=0.01
+python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.97 --learning-rate=0.01
+python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.95 --learning-rate=0.01
+python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.90 --learning-rate=0.01
+python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0 --learning-rate=0.01
+python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.99 --learning-rate=0.02
+python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.97 --learning-rate=0.02
+python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.95 --learning-rate=0.02
+python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0.90 --learning-rate=0.02
+python runner.py --dataset-root="/mnt/storage/scratch/$USER/MagnaTagATune" --epochs=20 --val-frequency=5 --momentum=0 --learning-rate=0.02
