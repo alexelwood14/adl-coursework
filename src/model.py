@@ -12,10 +12,10 @@ class Model(nn.Module):
         super().__init__()
         self.conv1 = nn.Conv1d(1, 1, length, stride)
         self.initialise_layer(self.conv1)
-        self.conv2 = nn.Conv1d(1, 32, 8, 1, padding=4)
+        self.conv2 = nn.Conv1d(1, 32, 8, 1, padding='same')
         self.initialise_layer(self.conv2)
         self.pool = nn.MaxPool1d(kernel_size=4)
-        self.conv3 = nn.Conv1d(32, 32, 8, 1, padding=4)
+        self.conv3 = nn.Conv1d(32, 32, 8, 1, padding='same')
         self.initialise_layer(self.conv3)
         self.full1 = nn.Linear(int(65536/stride), 100)
         self.full2 = nn.Linear(100, 50)
@@ -24,7 +24,9 @@ class Model(nn.Module):
         batch_size = input.shape[0]
         x = torch.flatten(input, 0, 1)
         # Min-Max Normalisation to [0, 1]
-        x = (x - GLOBAL_MIN) / ( GLOBAL_MAX - GLOBAL_MIN) 
+        x = (x - GLOBAL_MIN) / (GLOBAL_MAX - GLOBAL_MIN)
+        # Rescale to [-1, 1]
+        x = (x * 2) - 1
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = self.pool(x)
