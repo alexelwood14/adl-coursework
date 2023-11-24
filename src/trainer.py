@@ -73,7 +73,7 @@ class Trainer:
 
             # self.summary_writer.add_scalar("epoch", epoch, self.step)
             if ((epoch + 1) % val_frequency) == 0:
-                self.validate(self.val_path, self.train_loader)
+                self.validate(self.val_path, self.val_loader)
                 # self.validate() will put the model in validation mode,
                 # so we have to switch back to train mode afterwards
                 self.model.train()
