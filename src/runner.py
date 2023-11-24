@@ -99,7 +99,7 @@ def main(args):
     # Load the train, validation and test datasets and create
     train_labels_path = os.path.join(args.dataset_root, "annotations", "new_train_labels.pkl")
     val_labels_path = os.path.join(args.dataset_root, "annotations", "new_val_labels.pkl")
-    test_labels_path = os.path.join(args.dataset_root, "annotations", "test_labels.pkl")
+    test_labels_path = os.path.join(args.dataset_root, "annotations", "new_test_labels.pkl")
     samples_path = os.path.join(args.dataset_root, "samples")
     train_dataset = MagnaTagATune(train_labels_path, samples_path)
     val_dataset = MagnaTagATune(val_labels_path, samples_path)
