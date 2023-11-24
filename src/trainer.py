@@ -73,12 +73,12 @@ class Trainer:
 
             # self.summary_writer.add_scalar("epoch", epoch, self.step)
             if ((epoch + 1) % val_frequency) == 0:
-                self.validate(self.val_path)
+                self.validate(self.val_path, self.train_loader)
                 # self.validate() will put the model in validation mode,
                 # so we have to switch back to train mode afterwards
                 self.model.train()
 
-        self.validate(self.test_path)
+        self.validate(self.test_path, self.test_loader)
 
     def print_metrics(self, epoch, accuracy, loss, data_load_time, step_time):
         epoch_step = self.step % len(self.train_loader)
@@ -111,13 +111,13 @@ class Trainer:
                 "time/data", step_time, self.step
         )
 
-    def validate(self, data_path):
+    def validate(self, data_path, data_loader):
         all_preds = []
         self.model.eval()
 
         # No need to track gradients for validation, we're not optimizing.
         with torch.no_grad():
-            for _, batch, _ in self.val_loader:
+            for _, batch, _ in data_loader:
                 batch = batch.to(self.device)
                 logits = self.model(batch)
                 preds = logits.cpu().numpy() # .argmax(dim=-1) removed

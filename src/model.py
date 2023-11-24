@@ -10,9 +10,9 @@ GLOBAL_MAX = 32767
 class Model(nn.Module):
     def __init__(self, length, stride):
         super().__init__()
-        self.conv1 = nn.Conv1d(1, 1, length, stride)
+        self.conv1 = nn.Conv1d(1, 32, length, stride)
         self.initialise_layer(self.conv1)
-        self.conv2 = nn.Conv1d(1, 32, 8, 1, padding='same')
+        self.conv2 = nn.Conv1d(32, 32, 8, 1, padding='same')
         self.initialise_layer(self.conv2)
         self.pool = nn.MaxPool1d(kernel_size=4)
         self.conv3 = nn.Conv1d(32, 32, 8, 1, padding='same')
