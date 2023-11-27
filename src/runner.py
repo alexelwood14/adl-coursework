@@ -8,6 +8,7 @@ from multiprocessing import cpu_count
 from torch.utils.tensorboard import SummaryWriter
 from model import Model
 from trainer import Trainer
+from datetime import datetime
 
 
 DATA_PATH = os.path.join("data", "MagnaTagATune")
@@ -20,7 +21,7 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("--dataset-root", default=DATA_PATH)
 parser.add_argument("--log-dir", default=Path("logs"), type=Path)
-parser.add_argument("--learning-rate", default=1e-2, type=float, help="Learning rate")
+parser.add_argument("--learning-rate", default=0.005, type=float, help="Learning rate")
 parser.add_argument("--momentum", default=0.99, type=float, help="Momentum")
 parser.add_argument(
     "--batch-size",
@@ -71,6 +72,12 @@ parser.add_argument(
     type=int,
     help="Length of convolutional filter",
 )
+parser.add_argument(
+    "--save",
+    default=False,
+    type=bool,
+    help="Whether the final model should be saved."
+)
 
 
 def get_summary_writer_log_dir(args) -> str:
@@ -81,17 +88,12 @@ def get_summary_writer_log_dir(args) -> str:
         args: CLI Arguments
 
     Returns:
-        Subdirectory of log_dir with unique subdirectory name to prevent multiple runs
-        from getting logged to the same TB log directory (which you can't easily
-        untangle in TB).
+        The path to the log directory.
     """
-    tb_log_dir_prefix = f'CNN_bs={args.batch_size}_lr={args.learning_rate}_run_'
-    i = 0
-    while i < 1000:
-        tb_log_dir = os.path.join(log_dir, (tb_log_dir_prefix + str(i))) # TODO This is broken!
-        if os.path.exists(tb_log_dir):
-            return str(tb_log_dir)
-        i += 1
+
+    tb_log_dir_prefix = f'CNN_bs={args.batch_size}_lr={args.learning_rate}_mom={args.momentum}'
+    tb_log_dir = os.path.join(log_dir, tb_log_dir_prefix)
+
     return str(tb_log_dir)
 
 
@@ -142,9 +144,15 @@ def main(args):
     optimizer = torch.optim.SGD(model.parameters(), args.learning_rate, args.momentum)
 
     # Initialise logging
-    log_dir = get_summary_writer_log_dir(args)
-    print(f"Writing logs to {log_dir}")
-    summary_writer = SummaryWriter(str(log_dir), flush_secs=5)
+    log_path = get_summary_writer_log_dir(args)
+    print(f"Writing logs to {log_path}")
+    summary_writer = SummaryWriter(log_path, flush_secs=5)
+
+    model_path = f"{log_path}_model.pth"
+    if args.save:
+        print(f"Saving final state of the model to {model_path}")
+    else:
+        print("Model will not be saved. Use the flag --save True to save the model.")
 
     # Define trainer and train the model
     trainer = Trainer(
@@ -156,6 +164,9 @@ def main(args):
         print_frequency=args.print_frequency,
         log_frequency=args.log_frequency,
     )
+
+    if args.save:
+        torch.save(model.state_dict(), model_path)
 
 if __name__ == "__main__":
     main(parser.parse_args())
