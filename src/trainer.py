@@ -111,21 +111,45 @@ class Trainer:
                 "time/data", step_time, self.step
         )
 
-    def validate(self, data_path, data_loader):
+    def validate(self, data_path, data_loader, is_test=False):
         all_preds = []
+        all_labels = []
+        total_loss = 0
         self.model.eval()
 
         # No need to track gradients for validation, we're not optimizing.
         with torch.no_grad():
-            for _, batch, _ in data_loader:
+            for _, batch, labels in data_loader:
                 batch = batch.to(self.device)
                 logits = self.model(batch)
+
+                # Compute and add loss
+                total_loss += self.criterion(logits, labels)
+
+                # Collecting all preds
                 preds = logits.cpu().numpy() # .argmax(dim=-1) removed
                 all_preds.extend(list(preds))
 
-        # all_preds = torch.reshape(torch.tensor(all_preds), (-1, 1))
+                # Collecting all labels
+                all_labels.extend(list(labels.cpu().numpy()))
+
+        # AUC Evaluation
         all_preds = torch.tensor(np.array(all_preds)).to(self.device)
         evaluate(all_preds, data_path)
+
+        # Computing accuracy for the validation curve
+        label = "test" if is_test else "val"
+        val_accuracy = compute_accuracy(torch.tensor(labels).argmax(-1), logits.argmax(-1))
+        self.summary_writer.add_scalars(
+                "accuracy",
+                {label: val_accuracy},
+                self.step
+        )
+        self.summary_writer.add_scalars(
+                "loss",
+                {label: total_loss},
+                self.step
+        )
 
 
 def compute_accuracy(
