@@ -78,7 +78,7 @@ class Trainer:
                 # so we have to switch back to train mode afterwards
                 self.model.train()
 
-        self.validate(self.test_path, self.test_loader)
+        self.validate(self.test_path, self.test_loader, is_test=True)
 
     def print_metrics(self, epoch, accuracy, loss, data_load_time, step_time):
         epoch_step = self.step % len(self.train_loader)
@@ -121,6 +121,7 @@ class Trainer:
         with torch.no_grad():
             for _, batch, labels in data_loader:
                 batch = batch.to(self.device)
+                labels = labels.to(self.device)
                 logits = self.model(batch)
 
                 # Compute and add loss
@@ -138,16 +139,16 @@ class Trainer:
         evaluate(all_preds, data_path)
 
         # Computing accuracy for the validation curve
-        label = "test" if is_test else "val"
-        val_accuracy = compute_accuracy(torch.tensor(labels).argmax(-1), logits.argmax(-1))
+        curve_type = "test" if is_test else "val"
+        val_accuracy = compute_accuracy(torch.tensor(all_labels).argmax(-1), all_preds.argmax(-1))
         self.summary_writer.add_scalars(
                 "accuracy",
-                {label: val_accuracy},
+                {curve_type: val_accuracy},
                 self.step
         )
         self.summary_writer.add_scalars(
                 "loss",
-                {label: total_loss},
+                {curve_type: total_loss},
                 self.step
         )
 
