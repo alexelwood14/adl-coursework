@@ -140,7 +140,9 @@ class Trainer:
 
         # Computing accuracy for the validation curve
         curve_type = "test" if is_test else "val"
-        val_accuracy = compute_accuracy(torch.tensor(all_labels).argmax(-1), all_preds.argmax(-1))
+        all_labels = torch.tensor(all_labels).to(self.device)
+        all_preds = torch.tensor(all_preds).to(self.device)
+        val_accuracy = compute_accuracy(all_labels.argmax(-1), all_preds.argmax(-1))
         self.summary_writer.add_scalars(
                 "accuracy",
                 {curve_type: val_accuracy},
