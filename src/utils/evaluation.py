@@ -35,7 +35,7 @@ def evaluate(preds, gts_path):
     print("EVALUATION METRICS:")
     print("-------------------------------------------------------------")
     print()
-    print('AUC Score: {:.2f}'.format(auc_score))
+    print('AUC Score: {:.4f}'.format(auc_score))
     print()
     print("-------------------------------------------------------------")
 
