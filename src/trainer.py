@@ -148,6 +148,20 @@ class Trainer:
         all_preds = torch.tensor(np.array(all_preds)).to(self.device)
         evaluate(all_preds, data_path)
 
+        # Computing accuracy for the validation curve
+        curve_type = "test" if is_test else "val"
+        val_accuracy = compute_accuracy(torch.tensor(all_labels).argmax(-1), all_preds.argmax(-1))
+        self.summary_writer.add_scalars(
+                "accuracy",
+                {curve_type: val_accuracy},
+                self.step
+        )
+        self.summary_writer.add_scalars(
+                "loss",
+                {curve_type: total_loss},
+                self.step
+        )
+
 
 def compute_accuracy(
     labels: Union[torch.Tensor, np.ndarray], preds: Union[torch.Tensor, np.ndarray]
