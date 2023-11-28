@@ -127,6 +127,7 @@ class Trainer:
             for _, batch, labels in data_loader:
                 batch = batch.to(self.device)
                 labels = labels.to(self.device)
+                labels = labels.argmax(-1)
                 logits = self.model(batch)
 
                 # Compute loss
