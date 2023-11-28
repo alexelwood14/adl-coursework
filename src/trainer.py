@@ -78,6 +78,11 @@ class Trainer:
                 # so we have to switch back to train mode afterwards
                 self.model.train()
 
+            # Curves will be drawn every epoch
+            self.draw_curves(self.train_loader, "train")
+            self.draw_curves(self.val_loader, "val")
+            self.draw_curves(self.test_loader, "test")
+
         self.validate(self.test_path, self.test_loader, is_test=True)
 
     def print_metrics(self, epoch, accuracy, loss, data_load_time, step_time):
@@ -111,11 +116,47 @@ class Trainer:
                 "time/data", step_time, self.step
         )
 
+    def draw_curves(self, data_loader, curve_type):
+        self.model.eval()
+
+        loss = 0
+        correct = 0
+        total = 0
+
+        with torch.no_grad():
+            for _, batch, labels in data_loader:
+                batch = batch.to(self.device)
+                labels = labels.to(self.device)
+                logits = self.model(batch)
+
+                # Compute loss
+                loss += self.criterion(logits, labels)
+
+                # Compute number of correct guesses
+                preds = logits.argmax(-1)
+                correct += float((labels == preds).sum())
+                total += len(labels)
+
+        # Compute accuracy
+        accuracy = correct / total
+
+        # Log accuracy and loss curves
+        self.summary_writer.add_scalars(
+                "accuracy",
+                {curve_type: accuracy},
+                self.step
+        )
+        self.summary_writer.add_scalars(
+                "loss",
+                {curve_type: loss},
+                self.step
+        )
+
+             
+
     def validate(self, data_path, data_loader, is_test=False):
         all_preds = []
         self.model.eval()
-
-        curve_type = "test" if is_test else "val"
 
         # No need to track gradients for validation, we're not optimizing.
         with torch.no_grad():
@@ -124,22 +165,6 @@ class Trainer:
                 labels = labels.to(self.device)
                 logits = self.model(batch)
 
-                # Compute loss
-                val_loss = self.criterion(logits, labels)
-
-                # Log validation loss and accuracy
-                val_accuracy = compute_accuracy(labels.argmax(-1), logits.argmax(-1))
-                self.summary_writer.add_scalars(
-                        "accuracy",
-                        {curve_type: val_accuracy},
-                        self.step
-                )
-                self.summary_writer.add_scalars(
-                        "loss",
-                        {curve_type: val_loss},
-                        self.step
-                )
-
                 # Collecting all preds
                 preds = logits.cpu().numpy() # .argmax(dim=-1) removed
                 all_preds.extend(list(preds))
@@ -147,20 +172,6 @@ class Trainer:
         # AUC Evaluation
         all_preds = torch.tensor(np.array(all_preds)).to(self.device)
         evaluate(all_preds, data_path)
-
-        # Computing accuracy for the validation curve
-        curve_type = "test" if is_test else "val"
-        val_accuracy = compute_accuracy(torch.tensor(all_labels).argmax(-1), all_preds.argmax(-1))
-        self.summary_writer.add_scalars(
-                "accuracy",
-                {curve_type: val_accuracy},
-                self.step
-        )
-        self.summary_writer.add_scalars(
-                "loss",
-                {curve_type: total_loss},
-                self.step
-        )
 
 
 def compute_accuracy(
