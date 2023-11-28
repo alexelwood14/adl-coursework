@@ -113,9 +113,9 @@ class Trainer:
 
     def validate(self, data_path, data_loader, is_test=False):
         all_preds = []
-        all_labels = []
-        total_loss = 0
         self.model.eval()
+
+        curve_type = "test" if is_test else "val"
 
         # No need to track gradients for validation, we're not optimizing.
         with torch.no_grad():
@@ -124,35 +124,29 @@ class Trainer:
                 labels = labels.to(self.device)
                 logits = self.model(batch)
 
-                # Compute and add loss
-                total_loss += self.criterion(logits, labels)
+                # Compute loss
+                val_loss += self.criterion(logits, labels)
+
+                # Log validation loss and accuracy
+                val_accuracy = compute_accuracy(labels.argmax(-1), logits.argmax(-1))
+                self.summary_writer.add_scalars(
+                        "accuracy",
+                        {curve_type: val_accuracy},
+                        self.step
+                )
+                self.summary_writer.add_scalars(
+                        "loss",
+                        {curve_type: val_loss},
+                        self.step
+                )
 
                 # Collecting all preds
                 preds = logits.cpu().numpy() # .argmax(dim=-1) removed
                 all_preds.extend(list(preds))
 
-                # Collecting all labels
-                all_labels.extend(list(labels.cpu().numpy()))
-
         # AUC Evaluation
         all_preds = torch.tensor(np.array(all_preds)).to(self.device)
         evaluate(all_preds, data_path)
-
-        # Computing accuracy for the validation curve
-        curve_type = "test" if is_test else "val"
-        all_labels = torch.tensor(all_labels).to(self.device)
-        all_preds = torch.tensor(all_preds).to(self.device)
-        val_accuracy = compute_accuracy(all_labels.argmax(-1), all_preds.argmax(-1))
-        self.summary_writer.add_scalars(
-                "accuracy",
-                {curve_type: val_accuracy},
-                self.step
-        )
-        self.summary_writer.add_scalars(
-                "loss",
-                {curve_type: total_loss},
-                self.step
-        )
 
 
 def compute_accuracy(
