@@ -63,8 +63,8 @@ class Trainer:
 
                 data_load_time = data_load_end_time - data_load_start_time
                 step_time = time.time() - data_load_end_time
-                if ((self.step + 1) % log_frequency) == 0:
-                    self.log_metrics(epoch, accuracy, loss, data_load_time, step_time)
+                # if ((self.step + 1) % log_frequency) == 0:
+                #     self.log_metrics(epoch, accuracy, loss, data_load_time, step_time)
                 if ((self.step + 1) % print_frequency) == 0:
                     self.print_metrics(epoch, accuracy, loss, data_load_time, step_time)
 
@@ -127,13 +127,13 @@ class Trainer:
             for _, batch, labels in data_loader:
                 batch = batch.to(self.device)
                 labels = labels.to(self.device)
-                labels = labels.argmax(-1)
                 logits = self.model(batch)
 
                 # Compute loss
                 loss += self.criterion(logits, labels)
 
                 # Compute number of correct guesses
+                labels = labels.argmax(-1)
                 preds = logits.argmax(-1)
                 correct += float((labels == preds).sum())
                 total += len(labels)
