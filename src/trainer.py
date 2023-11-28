@@ -125,7 +125,7 @@ class Trainer:
                 logits = self.model(batch)
 
                 # Compute loss
-                val_loss += self.criterion(logits, labels)
+                val_loss = self.criterion(logits, labels)
 
                 # Log validation loss and accuracy
                 val_accuracy = compute_accuracy(labels.argmax(-1), logits.argmax(-1))
