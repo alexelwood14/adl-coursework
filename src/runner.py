@@ -156,7 +156,7 @@ def main(args):
 
     # Define trainer and train the model
     trainer = Trainer(
-        model, train_loader, val_loader, test_loader, val_labels_path, test_labels_path, criterion, optimizer, summary_writer, DEVICE
+        model, train_loader, val_loader, test_loader, train_labels_path, val_labels_path, test_labels_path, criterion, optimizer, summary_writer, DEVICE
     )
     trainer.train(
         args.epochs,

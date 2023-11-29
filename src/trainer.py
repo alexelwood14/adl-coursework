@@ -13,6 +13,7 @@ class Trainer:
         train_loader: DataLoader,
         val_loader: DataLoader,
         test_loader: DataLoader,
+        train_path: str,
         val_path: str,
         test_path: str,
         criterion: nn.Module,
@@ -25,6 +26,7 @@ class Trainer:
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.test_loader = test_loader
+        self.train_path = train_path
         self.val_path = val_path
         self.test_path = test_path
         self.criterion = criterion
@@ -73,17 +75,20 @@ class Trainer:
 
             # self.summary_writer.add_scalar("epoch", epoch, self.step)
             if ((epoch + 1) % val_frequency) == 0:
-                self.validate(self.val_path, self.val_loader)
-                # self.validate() will put the model in validation mode,
-                # so we have to switch back to train mode afterwards
+                # Validate on train dataset
+                self.validate(epoch, self.train_path, self.train_loader, "train")
+                # Validate on validation dataset
+                self.validate(epoch, self.val_path, self.val_loader, "val")
+                # Validation on test dataset
+                self.validate(epoch, self.test_path, self.test_loader, "test")
+
+                # Curves will be drawn every epoch
+                self.draw_curves(epoch, self.train_loader, "train")
+                self.draw_curves(epoch, self.val_loader, "val")
+                self.draw_curves(epoch, self.test_loader, "test")
+
+                # Switch back to train mode
                 self.model.train()
-
-            # Curves will be drawn every epoch
-            self.draw_curves(self.train_loader, "train")
-            self.draw_curves(self.val_loader, "val")
-            self.draw_curves(self.test_loader, "test")
-
-        self.validate(self.test_path, self.test_loader, is_test=True)
 
     def print_metrics(self, epoch, accuracy, loss, data_load_time, step_time):
         epoch_step = self.step % len(self.train_loader)
@@ -116,7 +121,7 @@ class Trainer:
                 "time/data", step_time, self.step
         )
 
-    def draw_curves(self, data_loader, curve_type):
+    def draw_curves(self, epoch, data_loader, curve_type):
         self.model.eval()
 
         loss = 0
@@ -145,17 +150,17 @@ class Trainer:
         self.summary_writer.add_scalars(
                 "accuracy",
                 {curve_type: accuracy},
-                self.step
+                epoch
         )
         self.summary_writer.add_scalars(
                 "loss",
                 {curve_type: loss},
-                self.step
+                epoch
         )
 
              
 
-    def validate(self, data_path, data_loader, is_test=False):
+    def validate(self, epoch, data_path, data_loader, curve_type):
         all_preds = []
         self.model.eval()
 
@@ -172,7 +177,14 @@ class Trainer:
 
         # AUC Evaluation
         all_preds = torch.tensor(np.array(all_preds)).to(self.device)
-        evaluate(all_preds, data_path)
+        auc = evaluate(all_preds, data_path)
+
+        # Log for curves
+        self.summary_writer.add_scalars(
+                "AUC",
+                {curve_type: auc},
+                epoch
+        )
 
 
 def compute_accuracy(
