@@ -11,6 +11,7 @@ class Trainer:
         self,
         model: nn.Module,
         train_loader: DataLoader,
+        train_loader2: DataLoader,
         val_loader: DataLoader,
         test_loader: DataLoader,
         train_path: str,
@@ -24,6 +25,7 @@ class Trainer:
         self.model = model.to(device)
         self.device = device
         self.train_loader = train_loader
+        self.train_loader2 = train_loader2
         self.val_loader = val_loader
         self.test_loader = test_loader
         self.train_path = train_path
@@ -76,7 +78,7 @@ class Trainer:
             # self.summary_writer.add_scalar("epoch", epoch, self.step)
             if ((epoch + 1) % val_frequency) == 0:
                 # Validate on train dataset
-                self.validate(epoch, self.train_path, self.train_loader, "train")
+                self.validate(epoch, self.train_path, self.train_loader2, "train")
                 # Validate on validation dataset
                 self.validate(epoch, self.val_path, self.val_loader, "val")
                 # Validation on test dataset

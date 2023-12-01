@@ -115,6 +115,13 @@ def main(args):
         num_workers=args.worker_count,
         drop_last = True
     )
+    train_loader2 = torch.utils.data.DataLoader(
+        train_dataset,
+        shuffle=False,
+        batch_size=args.batch_size,
+        pin_memory=True,
+        num_workers=args.worker_count,
+    )
     val_loader = torch.utils.data.DataLoader(
         val_dataset,
         shuffle=False,
@@ -156,7 +163,7 @@ def main(args):
 
     # Define trainer and train the model
     trainer = Trainer(
-        model, train_loader, val_loader, test_loader, train_labels_path, val_labels_path, test_labels_path, criterion, optimizer, summary_writer, DEVICE
+        model, train_loader, train_loader2, val_loader, test_loader, train_labels_path, val_labels_path, test_labels_path, criterion, optimizer, summary_writer, DEVICE
     )
     trainer.train(
         args.epochs,
