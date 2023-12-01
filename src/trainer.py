@@ -147,6 +147,7 @@ class Trainer:
 
         # Compute accuracy
         accuracy = correct / total
+        loss = loss / total
 
         # Log accuracy and loss curves
         self.summary_writer.add_scalars(
