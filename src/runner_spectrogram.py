@@ -1,4 +1,4 @@
-from utils.dataset_spectrogram import MagnaTagATune
+from dataset_spectrogram import MagnaTagATune
 from torch import nn
 import os
 import torch
@@ -6,7 +6,7 @@ import argparse
 from pathlib import Path
 from multiprocessing import cpu_count
 from torch.utils.tensorboard import SummaryWriter
-from model_spectrogram import Model
+from crnn_model import Model
 from trainer import Trainer
 
 
@@ -20,13 +20,13 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("--dataset-root", default=DATA_PATH)
 parser.add_argument("--log-dir", default=Path("logs"), type=Path)
-parser.add_argument("--learning-rate", default=0.005, type=float, help="Learning rate")
-parser.add_argument("--momentum", default=0.99, type=float, help="Momentum")
+parser.add_argument("--learning-rate", default=0.001, type=float, help="Learning rate")
+# parser.add_argument("--momentum", default=0.99, type=float, help="Momentum")
 parser.add_argument(
     "--batch-size",
-    default=10,
+    default=32,
     type=int,
-    help="Number of auto clip sets within each mini-batch",
+    help="Number of audio clip sets within each mini-batch",
 )
 parser.add_argument(
     "--epochs",
@@ -48,7 +48,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--print-frequency",
-    default=100,
+    default=1,
     type=int,
     help="How frequently to print progress to the command line in number of steps",
 )
@@ -90,7 +90,7 @@ def get_summary_writer_log_dir(args) -> str:
         The path to the log directory.
     """
 
-    tb_log_dir_prefix = f'CNN_bs={args.batch_size}_lr={args.learning_rate}_mom={args.momentum}'
+    tb_log_dir_prefix = f'CRNN_bs={args.batch_size}_lr={args.learning_rate}'
     tb_log_dir = os.path.join(log_dir, tb_log_dir_prefix)
 
     return str(tb_log_dir)
@@ -137,10 +137,10 @@ def main(args):
     print(f'Running model on device {DEVICE}')
 
     # Define the model, criterion and optimizer
-    print(f'Defining model with learning rate {args.learning_rate}, momentum {args.momentum}.')
+    print(f'Defining model with learning rate {args.learning_rate}')
     model = Model()
     criterion = nn.BCELoss()
-    optimizer = torch.optim.SGD(model.parameters(), args.learning_rate, args.momentum)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
 
     # Initialise logging
     log_path = get_summary_writer_log_dir(args)
