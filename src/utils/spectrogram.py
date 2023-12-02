@@ -3,8 +3,6 @@ import torchaudio
 import numpy as np
 import os
 import sys
-import matplotlib.pyplot as plt
-from scipy.io.wavfile import write
 
 
 def create_spectrogram(src_path, out_path):
@@ -13,11 +11,19 @@ def create_spectrogram(src_path, out_path):
         src_path (str): The path to the raw audio file
         out_path (str): The path to the output spectrogram file
     """
-
     data = np.load(src_path)
-    waveform = torch.tensor(data, dtype=torch.float32)
+    waveform = torch.from_numpy(data)
+    if waveform.ndim == 1:
+        waveform = waveform.unsqueeze(0)
+
+    # Create spectrogram
     spectrogram = torchaudio.transforms.MelSpectrogram(n_mels=128)(waveform)
-    np.save(out_path, spectrogram)
+
+    # Convert to Decibel scale
+    transform = torchaudio.transforms.AmplitudeToDB(stype="amplitude", top_db=80)
+    spectrogram_db = transform(spectrogram)
+
+    np.save(out_path, spectrogram_db)
 
 
 def parse_dataset(root_path):
