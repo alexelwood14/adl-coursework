@@ -11,7 +11,7 @@ def create_spectrogram(src_path, out_path):
         src_path (str): The path to the raw audio file
         out_path (str): The path to the output spectrogram file
     """
-    data = np.load(path)
+    data = np.load(src_path)
     waveform = torch.from_numpy(data)
 
     if waveform.ndim == 1:
