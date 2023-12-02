@@ -11,17 +11,22 @@ def create_spectrogram(src_path, out_path):
         src_path (str): The path to the raw audio file
         out_path (str): The path to the output spectrogram file
     """
-    data = np.load(src_path)
+    data = np.load(path)
     waveform = torch.from_numpy(data)
+
     if waveform.ndim == 1:
         waveform = waveform.unsqueeze(0)
 
-    # Create spectrogram
-    spectrogram = torchaudio.transforms.MelSpectrogram(n_mels=128)(waveform)
+    # Convert to spectrogram
+    spectrogram = torchaudio.transforms.MelSpectrogram(sample_rate=12000, n_fft=512, hop_length=256, n_mels=96)(waveform)
 
-    # Convert to Decibel scale
+    # Add padding
+    add_pad = torch.nn.ConstantPad1d(padding=37, value=0)
+    pad_spectrogram = add_pad(spectrogram)
+
+    # Convert to decibels
     transform = torchaudio.transforms.AmplitudeToDB(stype="amplitude", top_db=80)
-    spectrogram_db = transform(spectrogram)
+    spectrogram_db = transform(pad_spectrogram)
 
     np.save(out_path, spectrogram_db)
 
