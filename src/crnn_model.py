@@ -34,8 +34,7 @@ class Model(nn.Module):
         self.fc = torch.nn.Linear(1920, 50)
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
-        print("Input shape ", input.shape)
-        batch_size = input.shape[0]
+        # batch_size = input.shape[0]
         # x = torch.flatten(input, 0, 2)
         # print("After flatten shape ", x.shape)
         x = self.conv1(input)
