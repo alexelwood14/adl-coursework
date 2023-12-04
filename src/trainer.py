@@ -11,7 +11,7 @@ class Trainer:
         self,
         model: nn.Module,
         train_loader: DataLoader,
-        train_loader2: DataLoader,
+        train_loader2: DataLoader, # Unshuffled for validation
         val_loader: DataLoader,
         test_loader: DataLoader,
         train_path: str,
@@ -77,14 +77,12 @@ class Trainer:
 
             # self.summary_writer.add_scalar("epoch", epoch, self.step)
             if ((epoch + 1) % val_frequency) == 0:
-                # Validate on train dataset
+                # Validate and draw AUC curves
                 self.validate(epoch, self.train_path, self.train_loader2, "train")
-                # Validate on validation dataset
                 self.validate(epoch, self.val_path, self.val_loader, "val")
-                # Validation on test dataset
                 self.validate(epoch, self.test_path, self.test_loader, "test")
 
-                # Curves will be drawn every epoch
+                # Draw accuracy and loss curves
                 self.draw_curves(epoch, self.train_loader, "train")
                 self.draw_curves(epoch, self.val_loader, "val")
                 self.draw_curves(epoch, self.test_loader, "test")

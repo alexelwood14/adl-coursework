@@ -91,10 +91,14 @@ def get_summary_writer_log_dir(args) -> str:
         The path to the log directory.
     """
 
-    tb_log_dir_prefix = f'CNN_bs={args.batch_size}_lr={args.learning_rate}_mom={args.momentum}'
-    tb_log_dir = os.path.join(log_dir, tb_log_dir_prefix)
+    i = 0
+    tb_log_dir = f'CNN_bs={args.batch_size}_lr={args.learning_rate}_mom={args.momentum}_{i}'
+    while tb_log_dir in os.listdir(log_dir):
+        i += 1
+        tb_log_dir = f'CNN_bs={args.batch_size}_lr={args.learning_rate}_mom={args.momentum}_{i}'
 
-    return str(tb_log_dir)
+    tb_log_dir_path = os.path.join(log_dir, tb_log_dir)
+    return str(tb_log_dir_path)
 
 
 def main(args):

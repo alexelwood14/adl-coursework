@@ -21,7 +21,6 @@ parser = argparse.ArgumentParser(
 parser.add_argument("--dataset-root", default=DATA_PATH)
 parser.add_argument("--log-dir", default=Path("logs"), type=Path)
 parser.add_argument("--learning-rate", default=0.001, type=float, help="Learning rate")
-# parser.add_argument("--momentum", default=0.99, type=float, help="Momentum")
 parser.add_argument(
     "--batch-size",
     default=32,
@@ -90,14 +89,18 @@ def get_summary_writer_log_dir(args) -> str:
         The path to the log directory.
     """
 
-    tb_log_dir_prefix = f'CRNN_bs={args.batch_size}_lr={args.learning_rate}'
-    tb_log_dir = os.path.join(log_dir, tb_log_dir_prefix)
+    i = 0
+    tb_log_dir = f'CRNN_bs={args.batch_size}_lr={args.learning_rate}_{i}'
+    while tb_log_dir in os.listdir(log_dir):
+        i += 1
+        tb_log_dir = f'CRNN_bs={args.batch_size}_lr={args.learning_rate}_{i}'
 
-    return str(tb_log_dir)
+    tb_log_dir_path = os.path.join(log_dir, tb_log_dir)
+    return str(tb_log_dir_path)
 
 
 def main(args):
-    # Load the train, validation and test datasets and create
+    # Load the train, validation and test datasets and create dataloaders
     train_labels_path = os.path.join(args.dataset_root, "annotations", "new_train_labels.pkl")
     val_labels_path = os.path.join(args.dataset_root, "annotations", "new_val_labels.pkl")
     test_labels_path = os.path.join(args.dataset_root, "annotations", "new_test_labels.pkl")
@@ -109,6 +112,15 @@ def main(args):
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
         shuffle=True,
+        batch_size=args.batch_size,
+        pin_memory=True,
+        num_workers=args.worker_count,
+        drop_last = True
+    )
+    # Unshuffled train loader for AUC score computation on train dataset
+    train_loader2 = torch.utils.data.DataLoader(
+        train_dataset,
+        shuffle=False,
         batch_size=args.batch_size,
         pin_memory=True,
         num_workers=args.worker_count,
@@ -155,7 +167,7 @@ def main(args):
 
     # Define trainer and train the model
     trainer = Trainer(
-        model, train_loader, val_loader, test_loader, val_labels_path, test_labels_path, criterion, optimizer, summary_writer, DEVICE
+        model, train_loader, train_loader2, val_loader, test_loader, train_labels_path, val_labels_path, test_labels_path, criterion, optimizer, summary_writer, DEVICE
     )
     trainer.train(
         args.epochs,
