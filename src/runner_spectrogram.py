@@ -1,4 +1,4 @@
-from utils.dataset import MagnaTagATune
+from dataset_spectrogram import MagnaTagATune
 from torch import nn
 import os
 import torch
@@ -6,9 +6,8 @@ import argparse
 from pathlib import Path
 from multiprocessing import cpu_count
 from torch.utils.tensorboard import SummaryWriter
-from model import Model
+from crnn_model import Model
 from trainer import Trainer
-from datetime import datetime
 
 
 DATA_PATH = os.path.join("data", "MagnaTagATune")
@@ -21,13 +20,12 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("--dataset-root", default=DATA_PATH)
 parser.add_argument("--log-dir", default=Path("logs"), type=Path)
-parser.add_argument("--learning-rate", default=0.005, type=float, help="Learning rate")
-parser.add_argument("--momentum", default=0.99, type=float, help="Momentum")
+parser.add_argument("--learning-rate", default=0.001, type=float, help="Learning rate")
 parser.add_argument(
     "--batch-size",
-    default=10,
+    default=32,
     type=int,
-    help="Number of auto clip sets within each mini-batch",
+    help="Number of audio clip sets within each mini-batch",
 )
 parser.add_argument(
     "--epochs",
@@ -49,7 +47,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--print-frequency",
-    default=100,
+    default=1,
     type=int,
     help="How frequently to print progress to the command line in number of steps",
 )
@@ -92,21 +90,21 @@ def get_summary_writer_log_dir(args) -> str:
     """
 
     i = 0
-    tb_log_dir = f'CNN_bs={args.batch_size}_lr={args.learning_rate}_mom={args.momentum}_{i}'
+    tb_log_dir = f'CRNN_bs={args.batch_size}_lr={args.learning_rate}_{i}'
     while tb_log_dir in os.listdir(log_dir):
         i += 1
-        tb_log_dir = f'CNN_bs={args.batch_size}_lr={args.learning_rate}_mom={args.momentum}_{i}'
+        tb_log_dir = f'CRNN_bs={args.batch_size}_lr={args.learning_rate}_{i}'
 
     tb_log_dir_path = os.path.join(log_dir, tb_log_dir)
     return str(tb_log_dir_path)
 
 
 def main(args):
-    # Load the train, validation and test datasets and create
+    # Load the train, validation and test datasets and create dataloaders
     train_labels_path = os.path.join(args.dataset_root, "annotations", "new_train_labels.pkl")
     val_labels_path = os.path.join(args.dataset_root, "annotations", "new_val_labels.pkl")
     test_labels_path = os.path.join(args.dataset_root, "annotations", "new_test_labels.pkl")
-    samples_path = os.path.join(args.dataset_root, "samples")
+    samples_path = os.path.join(args.dataset_root, "samples_spectrogram")
     train_dataset = MagnaTagATune(train_labels_path, samples_path)
     val_dataset = MagnaTagATune(val_labels_path, samples_path)
     test_dataset = MagnaTagATune(test_labels_path, samples_path)
@@ -119,12 +117,14 @@ def main(args):
         num_workers=args.worker_count,
         drop_last = True
     )
+    # Unshuffled train loader for AUC score computation on train dataset
     train_loader2 = torch.utils.data.DataLoader(
         train_dataset,
         shuffle=False,
         batch_size=args.batch_size,
         pin_memory=True,
         num_workers=args.worker_count,
+        drop_last = True
     )
     val_loader = torch.utils.data.DataLoader(
         val_dataset,
@@ -149,10 +149,10 @@ def main(args):
     print(f'Running model on device {DEVICE}')
 
     # Define the model, criterion and optimizer
-    print(f'Defining model with learning rate {args.learning_rate}, momentum {args.momentum}.')
-    model = Model(args.length, args.stride)
+    print(f'Defining model with learning rate {args.learning_rate}')
+    model = Model()
     criterion = nn.BCELoss()
-    optimizer = torch.optim.SGD(model.parameters(), args.learning_rate, args.momentum)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
 
     # Initialise logging
     log_path = get_summary_writer_log_dir(args)
@@ -180,4 +180,4 @@ def main(args):
         torch.save(model.state_dict(), model_path)
 
 if __name__ == "__main__":
-    main(parser.parse_args())
+    main(parser.parse_args())   
