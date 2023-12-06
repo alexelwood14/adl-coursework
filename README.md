@@ -39,6 +39,8 @@ From the project root directory, navigate to model directory
 ```bash
 cd src/CNN
 ```
+Edit Line 18 of `train.sh` with correct data path and desired hyperparameters. 
+
 To run locally use:
 
 ```bash
@@ -65,6 +67,8 @@ From the project root directory, navigate to model directory
 ```bash
 cd src/CRNN
 ```
+Edit Line 18 of `train.sh` with correct data path and desired hyperparameters. 
+
 To run locally use:
 
 ```bash
