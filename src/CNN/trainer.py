@@ -3,7 +3,7 @@ from typing import Union
 from torch.optim.optimizer import Optimizer
 import time, argparse, torch
 from torch.utils.data import DataLoader
-from utils.evaluation import evaluate
+from evaluation import evaluate
 import numpy as np
 
 class Trainer:
