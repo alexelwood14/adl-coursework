@@ -44,7 +44,7 @@ Edit Line 18 of `train.sh` with correct data path and desired hyperparameters.
 To run locally use:
 
 ```bash
-./train.sh
+python runner.py 
 ```
 To run on BC4 with Slurm:
 
@@ -72,7 +72,7 @@ Edit Line 18 of `train.sh` with correct data path and desired hyperparameters.
 To run locally use:
 
 ```bash
-./train.sh
+python runner.py 
 ```
 To run on BC4 with Slurm:
 

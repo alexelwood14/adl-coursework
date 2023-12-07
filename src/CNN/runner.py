@@ -119,6 +119,7 @@ def main(args):
         num_workers=args.worker_count,
         drop_last = True
     )
+    # Unshuffled train loader for AUC score computation on train dataset
     train_loader2 = torch.utils.data.DataLoader(
         train_dataset,
         shuffle=False,

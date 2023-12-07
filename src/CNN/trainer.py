@@ -80,15 +80,17 @@ class Trainer:
                 # Validate and draw AUC curves
                 self.validate(epoch, self.train_path, self.train_loader2, "train")
                 self.validate(epoch, self.val_path, self.val_loader, "val")
-                self.validate(epoch, self.test_path, self.test_loader, "test")
 
                 # Draw accuracy and loss curves
                 self.draw_curves(epoch, self.train_loader, "train")
                 self.draw_curves(epoch, self.val_loader, "val")
-                self.draw_curves(epoch, self.test_loader, "test")
 
                 # Switch back to train mode
                 self.model.train()
+
+        # Evaluate against the test set
+        self.validate(epoch, self.test_path, self.test_loader, "test")
+        self.draw_curves(epoch, self.test_loader, "test")
 
     def print_metrics(self, epoch, accuracy, loss, data_load_time, step_time):
         epoch_step = self.step % len(self.train_loader)
