@@ -6,3 +6,4 @@ src/__pycache__
 .DS_STORE
 log_*.err
 log_*.out
+*__pycache__*
