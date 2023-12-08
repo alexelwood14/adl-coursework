@@ -34,21 +34,18 @@ Within the MagnaTagATune dataset samples directory, there should be train, val a
 
 Our model which replicates the CNN architecture from the Dieleman and Schrauwen can be found in [src/CNN/](src/CNN/).
 
-From the project root directory, navigate to model directory
+From the project root directory run locally using:
 
 ```bash
-cd src/CNN
+python src/CNN/runner.py 
 ```
+
 Edit Line 18 of `train.sh` with correct data path and desired hyperparameters. 
 
-To run locally use:
-
-```bash
-python runner.py 
-```
 To run on BC4 with Slurm:
 
 ```bash
+cd src/CNN/
 sbatch train.sh
 ```
 
@@ -62,20 +59,17 @@ Before running this model. The spectrogram data must be generated from the origi
 python src/utils/spectrogram.py <path-to-magnatagatune>
 ```
 
-From the project root directory, navigate to model directory
+From the project root directory run locally using:
 
 ```bash
-cd src/CRNN
+python src/CRNN/runner.py 
 ```
+
 Edit Line 18 of `train.sh` with correct data path and desired hyperparameters. 
 
-To run locally use:
-
-```bash
-python runner.py 
-```
 To run on BC4 with Slurm:
 
 ```bash
+cd src/CRNN/
 sbatch train.sh
 ```
