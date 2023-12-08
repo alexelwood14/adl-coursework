@@ -91,6 +91,9 @@ def get_summary_writer_log_dir(args) -> str:
         The path to the log directory.
     """
 
+    if not os.path.exists(log_dir):
+        os.mkdir(log_dir)
+
     i = 0
     tb_log_dir = f'CNN_bs={args.batch_size}_lr={args.learning_rate}_mom={args.momentum}_{i}'
     while tb_log_dir in os.listdir(log_dir):
