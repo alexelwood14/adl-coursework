@@ -81,7 +81,7 @@ class Trainer:
                 self.validate(epoch, self.train_path, self.train_loader2, "train")
                 self.validate(epoch, self.val_path, self.val_loader, "val")
 
-                # Draw accuracy and loss curves
+                #  Draw accuracy and loss curves
                 self.draw_curves(epoch, self.train_loader, "train")
                 self.draw_curves(epoch, self.val_loader, "val")
 
@@ -179,7 +179,7 @@ class Trainer:
                 all_preds.extend(list(preds))
 
         # AUC Evaluation
-        all_preds = torch.tensor(np.array(all_preds)).to(self.device)
+        all_preds = torch.cuda.HalfTensor(np.array(all_preds)).to(self.device)
         auc = evaluate(all_preds, data_path)
 
         # Log for curves

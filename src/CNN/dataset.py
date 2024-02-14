@@ -40,7 +40,7 @@ class MagnaTagATune(data.Dataset):
 
         filename = data['file_path']
         samples = torch.from_numpy(np.load(f"{self.samples_path}/{filename}"))
-        label = torch.FloatTensor(data['label'])
+        label = torch.cuda.HalfTensor(data['label'])
         samples = samples.view(10, -1).contiguous() # Create 10 subclips
 
         return filename, samples.unsqueeze(1), label
