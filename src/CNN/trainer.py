@@ -179,7 +179,7 @@ class Trainer:
                 all_preds.extend(list(preds))
 
         # AUC Evaluation
-        all_preds = torch.cuda.HalfTensor(np.array(all_preds)).to(self.device)
+        all_preds = torch.tensor(np.array(all_preds)).to(self.device)
         auc = evaluate(all_preds, data_path)
 
         # Log for curves

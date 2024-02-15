@@ -56,7 +56,7 @@ parser.add_argument(
 parser.add_argument(
     "-j",
     "--worker-count",
-    default=cpu_count(),
+    default=1,
     type=int,
     help="Number of worker processes used to load data.",
 )
@@ -114,6 +114,8 @@ def main(args):
     val_dataset = MagnaTagATune(val_labels_path, samples_path)
     test_dataset = MagnaTagATune(test_labels_path, samples_path)
 
+    torch.set_default_tensor_type(torch.HalfTensor)
+
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
         shuffle=True,
@@ -148,6 +150,10 @@ def main(args):
     # Move data to appropriate device
     if torch.cuda.is_available():
         DEVICE = torch.device("cuda")
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+        torch.backends.cudnn.benchmark = True
+        torch.backends.cudnn.enabled = True
     else:
         DEVICE = torch.device("cpu")
     print(f'Running model on device {DEVICE}')

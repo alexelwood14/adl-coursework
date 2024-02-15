@@ -10,17 +10,17 @@ GLOBAL_MAX = 32767
 class Model(nn.Module):
     def __init__(self, length, stride):
         super().__init__()
-        self.conv1 = nn.Conv1d(1, 32, length, stride, dtype=torch.half)
+        self.conv1 = nn.Conv1d(1, 32, length, stride)
         self.initialise_layer(self.conv1)
-        self.conv2 = nn.Conv1d(32, 32, 8, 1, padding='same', dtype=torch.half)
+        self.conv2 = nn.Conv1d(32, 32, 8, 1, padding='same')
         self.initialise_layer(self.conv2)
         self.pool = nn.MaxPool1d(kernel_size=4)
-        self.conv3 = nn.Conv1d(32, 32, 8, 1, padding='same', dtype=torch.half)
+        self.conv3 = nn.Conv1d(32, 32, 8, 1, padding='same')
         self.initialise_layer(self.conv3)
-        self.full1 = nn.Linear(int(65536/stride), 100, dtype=torch.half)
-        self.full2 = nn.Linear(100, 50, dtype=torch.half)
+        self.full1 = nn.Linear(int(65536/stride), 100)
+        self.full2 = nn.Linear(100, 50)
 
-    def forward(self, input: torch.cuda.HalfTensor) -> torch.cuda.HalfTensor:
+    def forward(self, input: torch.Tensor) -> torch.Tensor:
         batch_size = input.shape[0]
         x = torch.flatten(input, 0, 1)
         # Min-Max Normalisation to [0, 1]
