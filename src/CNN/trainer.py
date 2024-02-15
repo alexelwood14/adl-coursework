@@ -44,6 +44,7 @@ class Trainer:
         log_frequency: int = 5,
         start_epoch: int = 0
     ):
+        tic = time.perf_counter()
         self.model.train()
         for epoch in range(start_epoch, epochs):
             self.model.train()
@@ -87,6 +88,9 @@ class Trainer:
 
                 # Switch back to train mode
                 self.model.train()
+
+        tock = time.perf_counter();
+        print(f"Time taken to train all epochs {toc - tic:0.4f} seconds.")
 
         # Evaluate against the test set
         self.validate(epoch, self.test_path, self.test_loader, "test")
