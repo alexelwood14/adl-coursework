@@ -1,4 +1,7 @@
 from dataset import MagnaTagATune
+import sys
+torch_dir = '/lustre/home/br-aelwood/pytorch'
+sys.path.append(torch_dir)
 from torch import nn
 import os
 import torch
