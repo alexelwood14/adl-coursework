@@ -1,3 +1,7 @@
+import sys
+
+torch_dir = '/lustre/home/br-aelwood/pytorch'
+sys.path.append(torch_dir)
 from torch import nn
 import torch
 from torch.nn import functional as F
@@ -6,6 +10,7 @@ from torch.nn import functional as F
 # Used find_extrema() from utils.preprocessor
 GLOBAL_MIN = -32768
 GLOBAL_MAX = 32767
+
 
 class Model(nn.Module):
     def __init__(self, length, stride):
@@ -17,7 +22,7 @@ class Model(nn.Module):
         self.pool = nn.MaxPool1d(kernel_size=4)
         self.conv3 = nn.Conv1d(32, 32, 8, 1, padding='same')
         self.initialise_layer(self.conv3)
-        self.full1 = nn.Linear(int(65536/stride), 100)
+        self.full1 = nn.Linear(int(65536 / stride), 100)
         self.full2 = nn.Linear(100, 50)
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:

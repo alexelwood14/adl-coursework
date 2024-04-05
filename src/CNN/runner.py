@@ -1,5 +1,6 @@
 from dataset import MagnaTagATune
 import sys
+
 torch_dir = '/lustre/home/br-aelwood/pytorch'
 sys.path.append(torch_dir)
 from torch import nn
@@ -7,12 +8,10 @@ import os
 import torch
 import argparse
 from pathlib import Path
-from multiprocessing import cpu_count
 from torch.utils.tensorboard import SummaryWriter
 from model import Model
 from trainer import Trainer
 from datetime import datetime
-
 
 DATA_PATH = os.path.join("data", "MagnaTagATune")
 
@@ -125,7 +124,7 @@ def main(args):
         batch_size=args.batch_size,
         pin_memory=True,
         num_workers=args.worker_count,
-        drop_last = True
+        drop_last=True
     )
     # Unshuffled train loader for AUC score computation on train dataset
     train_loader2 = torch.utils.data.DataLoader(
@@ -180,7 +179,8 @@ def main(args):
 
     # Define trainer and train the model
     trainer = Trainer(
-        model, train_loader, train_loader2, val_loader, test_loader, train_labels_path, val_labels_path, test_labels_path, criterion, optimizer, summary_writer, DEVICE
+        model, train_loader, train_loader2, val_loader, test_loader, train_labels_path, val_labels_path,
+        test_labels_path, criterion, optimizer, summary_writer, DEVICE
     )
     trainer.train(
         args.epochs,
@@ -191,6 +191,7 @@ def main(args):
 
     if args.save:
         torch.save(model.state_dict(), model_path)
+
 
 if __name__ == "__main__":
     main(parser.parse_args())

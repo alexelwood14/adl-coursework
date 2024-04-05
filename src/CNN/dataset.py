@@ -1,8 +1,13 @@
 import pandas as pd
 import numpy as np
+import sys
+
+torch_dir = '/lustre/home/br-aelwood/pytorch'
+sys.path.append(torch_dir)
 import torch
 
 from torch.utils import data
+
 
 class MagnaTagATune(data.Dataset):
     def __init__(self, dataset_path, samples_path):

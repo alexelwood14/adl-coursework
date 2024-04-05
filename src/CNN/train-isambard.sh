@@ -6,5 +6,6 @@
 
 module use /software/x86/tools/nvidia/hpc_sdk/modulefiles
 module load nvhpc/22.9
+export CUDA_LAUNCH_BLOCKING=1
 source adl-coursework/venv/bin/activate
 python3 adl-coursework/src/CNN/runner.py --dataset-root="/lustre/projects/bristol/$USER/MagnaTagATune" --epochs=2 --val-frequency=2
