@@ -1,7 +1,3 @@
-import sys
-
-torch_dir = '/lustre/home/br-aelwood/pytorch'
-sys.path.append(torch_dir)
 from torch import nn
 import torch
 from torch.nn import functional as F
@@ -15,7 +11,7 @@ GLOBAL_MAX = 32767
 class Model(nn.Module):
     def __init__(self, length, stride):
         super().__init__()
-        self.conv1 = nn.Conv1d(1, 32, length, stride)
+        self.conv1 = nn.Conv1d(1, 32, length, stride, dtype=float)
         self.initialise_layer(self.conv1)
         self.conv2 = nn.Conv1d(32, 32, 8, 1, padding='same')
         self.initialise_layer(self.conv2)

@@ -1,9 +1,5 @@
 import pandas as pd
 import numpy as np
-import sys
-
-torch_dir = '/lustre/home/br-aelwood/pytorch'
-sys.path.append(torch_dir)
 import torch
 
 from torch.utils import data
@@ -46,7 +42,7 @@ class MagnaTagATune(data.Dataset):
         filename = data['file_path']
         samples = torch.from_numpy(np.load(f"{self.samples_path}/{filename}"))
         label = torch.tensor(data['label']).type(torch.HalfTensor)
-        samples = samples.view(10, -1).contiguous().type(torch.HalfTensor) # Create 10 subclips
+        samples = samples.view(10, -1).contiguous().type(torch.HalfTensor)  # Create 10 subclips
 
         return filename, samples.unsqueeze(1), label
 

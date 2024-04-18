@@ -1,8 +1,4 @@
 from dataset import MagnaTagATune
-import sys
-
-torch_dir = '/lustre/home/br-aelwood/pytorch'
-sys.path.append(torch_dir)
 from torch import nn
 import os
 import torch
@@ -12,6 +8,10 @@ from torch.utils.tensorboard import SummaryWriter
 from model import Model
 from trainer import Trainer
 from datetime import datetime
+import multiprocessing
+
+# Set the multiprocessing start method to 'spawn'
+multiprocessing.set_start_method('spawn', force=True)
 
 DATA_PATH = os.path.join("data", "MagnaTagATune")
 
@@ -118,13 +118,25 @@ def main(args):
 
     torch.set_default_tensor_type(torch.HalfTensor)
 
+    # Move data to appropriate device
+    if torch.cuda.is_available():
+        DEVICE = torch.device("cuda")
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+        torch.backends.cudnn.benchmark = True
+        torch.backends.cudnn.enabled = True
+    else:
+        DEVICE = torch.device("cpu")
+    print(f'Running model on device {DEVICE}')
+
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
         shuffle=True,
         batch_size=args.batch_size,
         pin_memory=True,
+        generator=torch.Generator(device='cpu'),
         num_workers=args.worker_count,
-        drop_last=True
+        drop_last=True,
     )
     # Unshuffled train loader for AUC score computation on train dataset
     train_loader2 = torch.utils.data.DataLoader(
@@ -132,7 +144,7 @@ def main(args):
         shuffle=False,
         batch_size=args.batch_size,
         pin_memory=True,
-        num_workers=args.worker_count,
+        num_workers=args.worker_count
     )
     val_loader = torch.utils.data.DataLoader(
         val_dataset,
@@ -149,21 +161,10 @@ def main(args):
         pin_memory=True,
     )
 
-    # Move data to appropriate device
-    if torch.cuda.is_available():
-        DEVICE = torch.device("cuda")
-        torch.backends.cuda.matmul.allow_tf32 = True
-        torch.backends.cudnn.allow_tf32 = True
-        torch.backends.cudnn.benchmark = True
-        torch.backends.cudnn.enabled = True
-    else:
-        DEVICE = torch.device("cpu")
-    print(f'Running model on device {DEVICE}')
-
     # Define the model, criterion and optimizer
     print(f'Defining model with learning rate {args.learning_rate}, momentum {args.momentum}.')
     model = Model(args.length, args.stride)
-    criterion = nn.BCELoss()
+    criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), args.learning_rate, args.momentum)
 
     # Initialise logging
